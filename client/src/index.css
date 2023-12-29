@@ -1,0 +1,159 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+button {
+  margin: 5px;
+  padding: 5px;
+}
+
+input {
+  font-size: 20px;
+  margin-left: 10px;
+}
+
+label {
+  display: inline-block;
+  width: 100px;
+  text-align: left;
+}
+
+.post-container {
+  border: 1px solid black;
+  border-radius: 15px;
+  width: 95%;
+  margin-top: 2%;
+  margin-left: 2%;
+}
+
+.post-container > * {
+  margin: 1% 2%;
+}
+
+.post-container > span {
+  border: 1px dashed green;
+}
+
+.post-container div {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s linear;
+  max-height: 1000px; /* Adjust to a reasonable value */
+  overflow: hidden;
+  opacity: 1;
+}
+
+.post-container div.hidden {
+  max-height: 0;
+  opacity: 0;
+}
+
+.comment-container {
+  border: 1px solid blue;
+  border-radius: 15px;
+  width:80%;
+  /* margin-left:5%; */
+}
+
+.comment-container > * {
+  margin: 2%;
+}
+
+.pagination {
+  display: inline-block;
+}
+
+.pagination button{
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  border: 1px solid #ddd;
+  margin: 0;
+}
+
+.pagination button:first-child {
+  border-radius: 5px;
+}
+
+.pagination button:last-child {
+  border-radius: 5px;
+}
+
+.pagination button.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.pagination button:hover:not(.active):not(:disabled) {
+  background-color: #ddd;
+}
+
+.pagination button:disabled {
+  background-color: darkgray;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #000;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  margin-bottom: 42px;
+  }
+
+  @keyframes rotation {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+  } 
+  
+
+.loader-container, .pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-container span {
+  position: absolute;
+  margin-top: 20%;
+  background-color: yellow;
+  border: 2px dashed red;
+  border-radius: 10px;
+  padding: 10px;
+  opacity: 1;
+  transition: opacity 0.3s linear;
+}
+
+.loader-container span.hidden {
+  opacity: 0;
+
+}
+
+.pagination-container {
+  margin-top: 15px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
