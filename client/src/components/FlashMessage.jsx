@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import httpClient from "../httpClient";
+import Alert from "react-bootstrap/Alert";
 
 function FlashMessage() {
   const [FlashMessages, setFlashMessages] = useState([]);
@@ -15,15 +16,14 @@ function FlashMessage() {
     })();
   }, []);
   return (
-    <div>
-      <ul>
-        {FlashMessages.map((message) => (
-          <li>
-            <p>{message[0]}</p>
-            <p>{message[1]}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="flash-message-container">
+      {FlashMessages.map((message) => (
+        <Alert variant={message[0]} dismissible className="flash-message">
+          <Alert.Heading>{message[0]}</Alert.Heading>
+          <hr />
+          <p>{message[1]}</p>
+        </Alert>
+      ))}
     </div>
   );
 }

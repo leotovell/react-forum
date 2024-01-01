@@ -3,33 +3,19 @@ import httpClient from "../httpClient";
 import PostsFeed from "../components/PostsFeed";
 import { useLocation, useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import { useAuth } from "../components/AuthProvider";
 
 const LandingPage = () => {
-  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [postCount, setPostCount] = useState(1);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [reloadPosts, setReloadPosts] = useState(false);
 
-  const logoutUser = async () => {
-    const resp = await httpClient.post("//localhost:5000/logout");
-    window.location.href = "/";
-  };
-
   useEffect(() => {
     setIsLoadingPosts(true);
   }, [reloadPosts]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const resp = await httpClient.get("//localhost:5000/@me");
-        setUser(resp.data);
-      } catch (error) {
-        console.log("Not authenticated");
-      }
-    })();
-  }, []);
+  const { user } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,28 +44,7 @@ const LandingPage = () => {
 
   return (
     <div>
-      <h1>Welcome to my forum</h1>
-      {user != null ? (
-        <div>
-          <p>You are logged in.</p>
-          <a href="/create-post">
-            <button>Create new post</button>
-          </a>
-          <button onClick={logoutUser}>Logout</button>
-        </div>
-      ) : (
-        <div>
-          <p>You are not logged in</p>
-          <div>
-            <a href="/login">
-              <button>Login</button>
-            </a>
-            <a href="/register">
-              <button>Register</button>
-            </a>
-          </div>
-        </div>
-      )}
+      <h1>Welcome to Leo's Forum</h1>
       <hr />
       <h1>Posts:</h1>
       {isLoadingPosts ? (
@@ -88,11 +53,19 @@ const LandingPage = () => {
         </div>
       ) : (
         <div>
-          <PostsFeed
-            posts={posts}
-            currentUser={user}
-            setReloadPosts={setReloadPosts}
-          />
+          {posts.length > 0 ? (
+            <PostsFeed
+              posts={posts}
+              currentUser={user}
+              setReloadPosts={setReloadPosts}
+            />
+          ) : (
+            <div>
+              <span>
+                <i>No Posts...</i>
+              </span>
+            </div>
+          )}
         </div>
       )}
       <hr></hr>

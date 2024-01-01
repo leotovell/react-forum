@@ -5,7 +5,6 @@ import httpClient from "../httpClient";
 const Profile = (props) => {
   const tempID = useParams();
   const [id, setId] = useState(tempID.id);
-  const [user, setUser] = useState(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,35 +16,6 @@ const Profile = (props) => {
     setAlertVisible(true);
   }, 5000);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const resp = await httpClient.get("//localhost:5000/@me");
-  //       setUser(resp.data);
-  //       console.log(resp.data);
-  //       if (resp.data.id == id) {
-  //         setIsOwnProfile(true);
-  //       }
-  //       navigate(`/profile/${resp.data.id}`);
-  //     } catch (error) {
-  //       console.log("Not authenticated");
-  //       if (!id) {
-  //         navigate("/login");
-  //       }
-  //     }
-  //   })();
-  // }, []);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const resp = await httpClient.post("//localhost:5000/profile", {
-  //         id,
-  //       })
-  //     }
-  //   })
-  // })
-  // THIS IS THE ONE
   useEffect(() => {
     (async () => {
       try {
@@ -61,6 +31,7 @@ const Profile = (props) => {
             const resp = await httpClient.get("//localhost:5000/@me");
             setId(resp.data.id);
             setIsLoggedIn(true);
+            setIsOwnProfile(true);
           } catch (error) {
             console.log("Not authenticated");
             navigate("/login");

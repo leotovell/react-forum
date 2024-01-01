@@ -123,7 +123,7 @@ label {
   } 
   
 
-.loader-container, .pagination-container {
+.loader-container, .pagination-container, .login-container, .login-submit-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -156,4 +156,113 @@ label {
   width: 100%;
   height: 100%;
   z-index: 1000;
+}
+
+.form-floating>label {
+  overflow: visible !important;
+}
+
+.login-container {
+  margin-top: 8%;
+}
+
+.login-submit-container {
+  margin-top: 8px;
+}
+
+#forgotPasswordBtn {
+  text-decoration: none;
+  color: rgb(52, 163, 231);
+}
+
+#forgotPasswordBtn:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+
+:root {
+  --error-position-x: 169px;
+  --error-position-y: -86px;
+}
+
+.password-error,
+.password-error-hidden {
+  position: absolute;
+  transform: translate(var(--error-position-x), var(--error-position-y));
+  border: 1px solid red;
+  width: fit-content;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: red;
+}
+
+.password-error-hidden {
+  opacity: 0;
+  transition: opacity 0.3s linear;
+}
+
+.password-no-match {
+  border: 1px solid red !important;
+}
+
+.password-error-active {
+  position: absolute;
+  transform: translate(var(--error-position-x), var(--error-position-y));
+  border: 1px solid red;
+  width: fit-content;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: red;
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transition: opacity 0.3s linear;
+  opacity: 1;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(calc(var(--error-position-x) - 1px), var(--error-position-y), 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(calc(var(--error-position-x) + 2px), var(--error-position-y), 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(calc(var(--error-position-x) - 4px), var(--error-position-y), 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(calc(var(--error-position-x) + 4px), var(--error-position-y), 0);
+  }
+
+  100% {
+    transform: translate3d(var(--error-position-x), var(--error-position-y), 0);
+  }
+}
+
+.forum-banner h1{
+  width: 100vw;
+  font-size: 5vw;
+  padding: 2vw;
+  padding-left: 5vw;
+  background-color: darkgray;
+}
+
+.forum-banner h1 {
+  text-decoration: underline;
+}
+
+.flash-message-container {
+  z-index: 999;
+  display: flex;
+  position: absolute;
+  width: 100vw;
+  justify-content: end;
+}
+
+.flash-message {
+  margin: 15px;
 }
