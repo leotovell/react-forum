@@ -4,7 +4,7 @@ from flask_session import Session
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import User, Post, Comment, ResetToken, Forum, db
-from config import ApplicationConfig, RESPONSES
+from config import ApplicationConfig, RESPONSES, languageCodes, countries
 import math
 
 from emailClient import sendResetEmail
@@ -124,6 +124,64 @@ def logout_user():
     flash_message(session, ("success", "Successfully logged out, hope to see you soon!"))
     session.pop("user_id")
     return "200"
+
+@app.route("/get-language-codes", methods=["GET"])
+def get_language_codes():
+    return jsonify({
+        "codes": languageCodes
+    })
+
+@app.route("/get-country-codes", methods=["GET"])
+def get_country_codes():
+    return jsonify({
+        "codes": countries
+    })
+
+@app.route("/check-forum-name", methods=["POST"])
+def check_forum_name():
+    forum_name = request.json["name"]
+    forum = Forum.query.filter_by(name=forum_name).first()
+    print(forum)
+    if forum is None:
+        return jsonify({
+            "exists": False
+        }), 200
+    else:
+        return jsonify({
+            "exists": True
+        }), 409
+    
+@app.route("/check-vanity-url", methods=["POST"])
+def check_vanity_url():
+    url = request.json["url"]
+    forum = Forum.query.filter_by(vanity_url=url).first()
+    print(forum)
+    if forum is None:
+        return jsonify({
+            "exists": False
+        }), 200
+    else:
+        return jsonify({
+            "exists": True
+        }), 409
+
+@app.route("/create-forum", methods=["POST"])
+def create_forum():
+    forum_name = request.json["forum_name"]
+    owner_id = session.get("user_id")
+    #Forum Settings
+    visibility = request.json["visibility"]
+    new_forum = Forum(name=forum_name, owner=owner_id)
+    db.session.add(new_forum)
+    db.session.commit()
+
+    flash_message(session, ("success", f"Great! {new_forum.name} is now live!"))
+
+    return jsonify({
+        "id": new_forum.id,
+        "name": new_forum.name
+    }), 200
+
 
 @app.route("/create-post", methods=["POST"])
 def create_post():

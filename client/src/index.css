@@ -24,7 +24,7 @@ input {
 
 label {
   display: inline-block;
-  width: 100px;
+  /* width: 100px; */
   text-align: left;
 }
 
@@ -265,4 +265,17 @@ label {
 
 .flash-message {
   margin: 15px;
+}
+
+.fa-spin {
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

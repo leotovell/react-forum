@@ -28,7 +28,16 @@ class Forum(db.Model):
     __tablename__ = "forums"
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     name = db.Column(db.String(255), unique=True, nullable=False)
+    vanity_url = db.Column(db.String(32), unique=True)
+    owner = db.Column(db.String(32), db.ForeignKey("users.id"))
     posts = db.relationship("Post", backref="forum", lazy=True)
+
+class ForumSettings(db.Model):
+    __tablename__ = "forum_settings"
+    forum_id = db.Column(db.String(32), db.ForeignKey("forums.id"), primary_key=True, unique=True)
+    public = db.Column(db.Boolean, default=True)
+    description = db.Column(db.Text, nullable=True)
+    language = db.Column(db.String(2), nullable=False) #Language codes found in applicationConfig
 
 class Post(db.Model):
     __tablename__ = "posts"
