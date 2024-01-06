@@ -5,7 +5,7 @@ import httpClient from "../httpClient";
 import PostsFeed from "../components/PostsFeed";
 import Pagination from "../components/Pagination";
 
-const Forum = () => {
+const Forum = (props) => {
   const { user } = useAuth();
   const forum = useParams();
   const navigate = useNavigate();

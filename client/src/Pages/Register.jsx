@@ -31,14 +31,10 @@ const Register = () => {
     navigate("/");
   }
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
   const registerUser = async () => {
     if (validUsername) {
       try {
-        const resp = await httpClient.post("//localhost:5000/register", {
+        await httpClient.post("//localhost:5000/register", {
           email,
           username,
           password,
@@ -64,7 +60,7 @@ const Register = () => {
     if (username.length >= 3) {
       try {
         setUsernameCheckLoading(true);
-        const resp = await httpClient.post(
+        await httpClient.post(
           "//localhost:5000/register-check-username",
           {
             username,

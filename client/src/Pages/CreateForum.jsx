@@ -22,6 +22,7 @@ import Forum from "../components/Forum";
 import Image from "react-bootstrap/Image";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
+import ForumPreview from "../components/ForumPreview";
 
 const CreateForum = () => {
   const { user } = useAuth();
@@ -198,13 +199,14 @@ const CreateForum = () => {
   }, [forumNameValid, forumName, forumNameCheckLoading]);
 
   const handleFileUpload = (e) => {
-    console.log(e);
-    var reader = new FileReader();
-    reader.onloadend = () => {
-      setForumPicture(reader.result);
-      setIsCustomPhotoUploaded(true);
-    };
-    reader.readAsDataURL(e.target.files[0]);
+    if (e.target.files.length > 0) {
+      var reader = new FileReader();
+      reader.onloadend = () => {
+        setForumPicture(reader.result);
+        setIsCustomPhotoUploaded(true);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   const [isCustomPhotoUploaded, setIsCustomPhotoUploaded] = useState(false);
@@ -288,7 +290,11 @@ const CreateForum = () => {
 
               <Col xs="auto">
                 <Form.Label>Your Forum Photo</Form.Label>
-                <DropdownButton id="photo-dropdown" title="Preset Photos">
+                <DropdownButton
+                  className="mb-2"
+                  id="photo-dropdown"
+                  title="Preset Photos"
+                >
                   <div
                     className="d-flex flex-wrap"
                     style={{ paddingLeft: "10px" }}
@@ -326,6 +332,7 @@ const CreateForum = () => {
                   imgUrl={forumPicture}
                   show={isCustomPhotoUploaded}
                   setShow={setIsCustomPhotoUploaded}
+                  saveImage={setForumPictureUrl}
                 />
               </Col>
               <Col xs="auto">
@@ -398,7 +405,14 @@ const CreateForum = () => {
           </Form>
         </Tab>
         <Tab eventKey="preview" title="Preview">
-          <Forum forumName={forumName} forumPublic={visibility} />
+          <ForumPreview
+            forumName={forumName}
+            setForumName={setForumName}
+            forumImage={forumPictureUrl}
+            desc={description}
+            setDescription={setDescription}
+            preview={true}
+          />
         </Tab>
       </Tabs>
     </div>

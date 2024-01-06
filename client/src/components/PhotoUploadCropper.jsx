@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
 import { Col, Form, Row } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 
-function PhotoUploadCropper({ imgUrl, show, setShow }) {
+function PhotoUploadCropper({ imgUrl, show, setShow, saveImage }) {
   const [src, setSrc] = useState();
   //   const [show, setShow] = useState(false);
   const [preview, setPreview] = useState();
@@ -11,12 +11,15 @@ function PhotoUploadCropper({ imgUrl, show, setShow }) {
   const [sliderValue, setSliderValue] = useState(1);
 
   const calculateScale = (val) => {
-    // scaleRange 1-2.5x
-    // Val 0-100, map that from 1 to 2.5
-    // 2.5/100 = 0.025
     var newScale = 1 + val * 0.025;
-    console.log(newScale);
     setScale(newScale);
+  };
+
+  const editor = useRef(AvatarEditor);
+
+  const handleSave = () => {
+    const editedImage = editor.current.getImage().toDataURL();
+    saveImage(editedImage);
   };
 
   return (
@@ -37,13 +40,15 @@ function PhotoUploadCropper({ imgUrl, show, setShow }) {
           <Row>
             <Col>
               <AvatarEditor
+                ref={editor}
                 image={imgUrl}
                 width={250}
                 height={250}
-                // border={50}
+                borderRadius={250 / 2}
                 color={[255, 255, 255, 0.6]}
                 scale={scale}
                 rotate={0}
+                backgroundColor="red"
               />
             </Col>
             <Col>
@@ -55,6 +60,7 @@ function PhotoUploadCropper({ imgUrl, show, setShow }) {
                   calculateScale(e.target.value);
                 }}
               />
+              <input type="button" onClick={handleSave} value="Submit" />
             </Col>
           </Row>
         </Form>
