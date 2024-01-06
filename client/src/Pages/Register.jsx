@@ -6,8 +6,15 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import InputGroup from "react-bootstrap/InputGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col } from "react-bootstrap";
+import {
+  faCircleCheck,
+  faCircleMinus,
+  faCircleXmark,
+  faEye,
+  faEyeSlash,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
+import { Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -50,18 +57,20 @@ const Register = () => {
   };
 
   const [validUsername, setValidUsername] = useState(true);
+  const [usernameCheckLoading, setUsernameCheckLoading] = useState(false);
 
   const checkUsernameValid = async (e) => {
     const username = e;
     if (username.length >= 3) {
       try {
+        setUsernameCheckLoading(true);
         const resp = await httpClient.post(
           "//localhost:5000/register-check-username",
           {
             username,
           }
         );
-        console.log(resp);
+        setUsernameCheckLoading(false);
         setValidUsername(true);
       } catch (error) {
         alert("Username taken.");
@@ -71,6 +80,52 @@ const Register = () => {
       setValidUsername(false);
     }
   };
+
+  const [usernameIcon, setUsernameIcon] = useState(
+    <FontAwesomeIcon icon={faCircleMinus} />
+  );
+
+  const Link = ({ id, children, title, styleColor }) => (
+    <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
+      <a href="#" style={{ color: styleColor, cursor: "help" }}>
+        {children}
+      </a>
+    </OverlayTrigger>
+  );
+
+  useEffect(() => {
+    if (username.length < 3) {
+      setUsernameIcon(
+        <Link
+          id="none-set"
+          title="Ensure username is 3 characters or greater."
+          styleColor="grey"
+        >
+          <FontAwesomeIcon icon={faCircleMinus} />
+        </Link>
+      );
+    } else if (usernameCheckLoading) {
+      setUsernameIcon(
+        <FontAwesomeIcon
+          style={{ color: "grey" }}
+          icon={faSpinner}
+          className="fa-spin"
+        />
+      );
+    } else if (validUsername) {
+      setUsernameIcon(
+        <Link id="none-set" title="Username available" styleColor="green">
+          <FontAwesomeIcon style={{ color: "green" }} icon={faCircleCheck} />
+        </Link>
+      );
+    } else {
+      setUsernameIcon(
+        <Link id="none-set" title="Username invalid" styleColor="red">
+          <FontAwesomeIcon style={{ color: "red" }} icon={faCircleXmark} />
+        </Link>
+      );
+    }
+  }, [validUsername, username, usernameCheckLoading]);
 
   return (
     <>
@@ -122,6 +177,7 @@ const Register = () => {
                         }
                       }}
                     />
+                    <InputGroup.Text>{usernameIcon}</InputGroup.Text>
                   </InputGroup>
                 </Col>
               </Row>
