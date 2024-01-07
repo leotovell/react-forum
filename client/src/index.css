@@ -267,50 +267,36 @@ label {
 .forum-banner {
   width: 100vw;
   font-size: 5vw;
-  padding: 2vw;
-  padding-left: 5vw;
+  padding: 2vw 2vw 2vw 0vw;
   background-color: darkgray;
   display: flex;
-  height: 25vh;
 }
 
-.forum-banner textarea {
-  border-style: none;
-  border-color: transparent;
-  background: transparent;
+.banner-sticky {
+  background-color: green !important;
+  top: 0;
+  position: fixed;
+  z-index: 999;
+}
+
+.forum-title {
+  font-size: calc(2.5rem + 1.5vw);
+}
+
+.forum-desc {
+  font-size: calc(1.25rem + 0.8vw);
+  color: dimgrey;
+  white-space: normal;
   overflow: hidden;
-  resize: none;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
 }
 
 .forum-banner img {
-  border-radius: 125px;
+  border-radius: 100%;
   display: inline-block;
-  margin-right: 20px;
-}
-
-.forum-banner div .forum-desc {
-  color: grey;
-  font-size: 1.2em;
-  line-height: 1.5;
-  /* height: fit-content; */
-}
-
-.forum-banner div .forum-title {
-  font-size: 2em;
-  /* line-height: 4vw; */
-  /* height: 5vw; */
-  margin-bottom: 10px;
-}
-
-@media (max-width: 768px) {
-  /* Adjust styles for smaller screens */
-  .forum-banner div .forum-title {
-    font-size: 1.5em;
-  }
-
-  .forum-banner div .forum-desc {
-    font-size: 1em;
-  }
+  /* margin-right: 20px; */
+  max-width: 200px;
 }
 
 .flash-message-container {
@@ -384,4 +370,20 @@ label {
   left: 50%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
+}
+
+.wiggle {
+  animation: wiggle 1s infinite;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+  100% {
+    transform: rotate(-1deg);
+  }
 }

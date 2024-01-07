@@ -18,16 +18,25 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import Forum from "../components/Forum";
 import Image from "react-bootstrap/Image";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import ForumPreview from "../components/ForumPreview";
+import Accordion from "react-bootstrap/Accordion";
+import { useNavigate } from "react-router-dom";
 
 const CreateForum = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
+  if (user) {
+    navigate("/login");
+  }
   const [forumName, setForumName] = useState("");
-  const [visibility, setVisibility] = useState();
+  const [forumSettings, setForumSettings] = useState({
+    public: true,
+    allow_edits: true,
+    allow_polls: true,
+  });
   const [description, setDescription] = useState();
   const [region, setRegion] = useState("XX");
   const [regions, setRegions] = useState([]);
@@ -71,10 +80,10 @@ const CreateForum = () => {
 
   const submitForum = async () => {
     try {
-      const resp = await httpClient.post("//localhost:5000/create-forum", {
+      await httpClient.post("//localhost:5000/create-forum", {
         forumName,
         // Settings
-        visibility,
+        forumSettings,
       });
       //   window.location.href = "/";
       alert("success");
@@ -129,9 +138,12 @@ const CreateForum = () => {
 
   const Link = ({ id, children, title }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-      <a href="#" style={{ color: "grey", cursor: "help" }}>
+      <button
+        style={{ all: "unset", color: "grey", cursor: "help" }}
+        onClick={(e) => e.preventDefault()}
+      >
         {children}
-      </a>
+      </button>
     </OverlayTrigger>
   );
 
@@ -226,183 +238,259 @@ const CreateForum = () => {
           title="Edit"
           style={{ marginBottom: "0 !important" }}
         >
-          <Form style={{ margin: "20px" }}>
-            <Row className="align-items-center">
-              <Col>
-                <Form.Label>
-                  Your Forum Name{" "}
-                  <Link id="t-1" title={"Must be 3 characters or greater"}>
-                    <FontAwesomeIcon icon={faCircleQuestion} />
-                  </Link>
-                </Form.Label>
-                <InputGroup className="mb-2">
-                  <Form.Control
-                    aria-describedby="basic-addon3"
-                    value={forumName}
-                    onChange={(e) => {
-                      setForumName(e.target.value);
-                      checkForumName(e.target.value);
-                    }}
-                    style={
-                      forumName.length < 3
-                        ? {}
-                        : forumNameCheckLoading
-                        ? {}
-                        : forumNameValid
-                        ? { border: "1px solid green" }
-                        : { border: "1px solid red" }
-                    }
-                  />
-                  <InputGroup.Text>{forumNameIcon}</InputGroup.Text>
-                </InputGroup>
-
-                <Form.Label>
-                  Your vanity URL{" "}
-                  <Link id="t-1" title={"Must be 3 characters or greater"}>
-                    <FontAwesomeIcon icon={faCircleQuestion} />
-                  </Link>
-                </Form.Label>
-                <InputGroup className="mb-2">
-                  <InputGroup.Text id="basic-addon3">
-                    https://forum.leotovell.co.uk/forum/
-                  </InputGroup.Text>
-                  <Form.Control
-                    id="basic-url"
-                    aria-describedby="basic-addon3"
-                    value={vanityUrl}
-                    onChange={(e) => {
-                      setVanityUrl(e.target.value);
-                      checkVanityUrl(e.target.value);
-                    }}
-                    style={
-                      vanityUrl.length < 3
-                        ? {}
-                        : vanityUrlCheckLoading
-                        ? {}
-                        : vanityUrlValid
-                        ? { border: "1px solid green" }
-                        : { border: "1px solid red" }
-                    }
-                  />
-                  <InputGroup.Text>{vanityIcon}</InputGroup.Text>
-                </InputGroup>
-              </Col>
-
-              <Col xs="auto">
-                <Form.Label>Your Forum Photo</Form.Label>
-                <DropdownButton
-                  className="mb-2"
-                  id="photo-dropdown"
-                  title="Preset Photos"
-                >
-                  <div
-                    className="d-flex flex-wrap"
-                    style={{ paddingLeft: "10px" }}
-                  >
-                    {imageUrls.map((url, index) => (
-                      <Dropdown.Item
-                        key={index}
-                        // className="mx-2 my-2 d-flex align-items-center"
-                        style={{ display: "contents" }}
-                        onClick={() => setForumPictureUrl(url)}
-                      >
-                        <Image
-                          src={url}
-                          width={"20%"}
-                          style={{ margin: "2px" }}
+          <Accordion defaultActiveKey={["0"]} alwaysOpen>
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>General</Accordion.Header>
+              <Accordion.Body>
+                <Form style={{ margin: "20px" }}>
+                  <Row className="align-items-center">
+                    <Col>
+                      <Form.Label>
+                        Your Forum Name{" "}
+                        <Link
+                          id="t-1"
+                          title={"Must be 3 characters or greater"}
+                        >
+                          <FontAwesomeIcon icon={faCircleQuestion} />
+                        </Link>
+                      </Form.Label>
+                      <InputGroup className="mb-2">
+                        <Form.Control
+                          aria-describedby="basic-addon3"
+                          value={forumName}
+                          onChange={(e) => {
+                            setForumName(e.target.value);
+                            checkForumName(e.target.value);
+                          }}
+                          style={
+                            forumName.length < 3
+                              ? {}
+                              : forumNameCheckLoading
+                              ? {}
+                              : forumNameValid
+                              ? { border: "1px solid green" }
+                              : { border: "1px solid red" }
+                          }
                         />
-                      </Dropdown.Item>
-                    ))}
-                  </div>
-                </DropdownButton>
-                <Button
-                  onClick={() => document.getElementById("fileInput").click()}
-                >
-                  Upload Custom Photo
-                </Button>
-                <input
-                  type="file"
-                  id="fileInput"
-                  style={{ display: "none" }}
-                  onChange={(e) => handleFileUpload(e)}
-                  accept="image/png"
-                ></input>
-                <PhotoUploadCropper
-                  // https://www.npmjs.com/package/react-avatar-editor
-                  imgUrl={forumPicture}
-                  show={isCustomPhotoUploaded}
-                  setShow={setIsCustomPhotoUploaded}
-                  saveImage={setForumPictureUrl}
-                />
-              </Col>
-              <Col xs="auto">
-                <input hidden type="file" />
-                <div className="container-forum-image-preview">
-                  <Image
-                    className="forum-image-preview"
-                    roundedCircle
-                    src={forumPictureUrl}
-                    onClick={() => document.getElementById("fileInput").click()}
-                    width={"100px"}
-                    height="100px"
-                  />
-                  <div className="middle">
-                    <FontAwesomeIcon icon={faUpload} />
-                  </div>
-                </div>
-              </Col>
-            </Row>
+                        <InputGroup.Text>{forumNameIcon}</InputGroup.Text>
+                      </InputGroup>
 
-            <Form.Label>Forum Description</Form.Label>
-            <InputGroup className="mb-2">
-              <Form.Control
-                as="textarea"
-                aria-label="With textarea"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </InputGroup>
-            <Row>
-              <Col>
-                <Form.Label>Forum Region</Form.Label>
-                <InputGroup>
-                  <Form.Select
-                    value={region}
-                    onChange={(e) => setRegion(e.target.value)}
-                  >
-                    {regions.length == 0 ? (
-                      <option>Loading...</option>
-                    ) : (
-                      regions.map((region) => (
-                        <option key={region[0]} value={region[0]}>
-                          {region[1]}
-                        </option>
-                      ))
-                    )}
-                  </Form.Select>
-                </InputGroup>
-              </Col>
-              <Col>
-                <Form.Label>Forum Language</Form.Label>
-                <InputGroup className="mb-2">
-                  <Form.Select
-                    value={langauge}
-                    onChange={(e) => setLanguage(e.target.value)}
-                  >
-                    {languages.length == 0 ? (
-                      <option>Loading...</option>
-                    ) : (
-                      languages.map((language, index) => (
-                        <option key={index} value={language[0]}>
-                          {language[1]}
-                        </option>
-                      ))
-                    )}
-                  </Form.Select>
-                </InputGroup>
-              </Col>
-            </Row>
-          </Form>
+                      <Form.Label>
+                        Your vanity URL{" "}
+                        <Link
+                          id="t-1"
+                          title={"Must be 3 characters or greater"}
+                        >
+                          <FontAwesomeIcon icon={faCircleQuestion} />
+                        </Link>
+                      </Form.Label>
+                      <InputGroup className="mb-2">
+                        <InputGroup.Text id="basic-addon3">
+                          https://forum.leotovell.co.uk/forum/
+                        </InputGroup.Text>
+                        <Form.Control
+                          id="basic-url"
+                          aria-describedby="basic-addon3"
+                          value={vanityUrl}
+                          onChange={(e) => {
+                            setVanityUrl(e.target.value);
+                            checkVanityUrl(e.target.value);
+                          }}
+                          style={
+                            vanityUrl.length < 3
+                              ? {}
+                              : vanityUrlCheckLoading
+                              ? {}
+                              : vanityUrlValid
+                              ? { border: "1px solid green" }
+                              : { border: "1px solid red" }
+                          }
+                        />
+                        <InputGroup.Text>{vanityIcon}</InputGroup.Text>
+                      </InputGroup>
+                    </Col>
+
+                    <Col xs="auto">
+                      <Form.Label>Your Forum Photo</Form.Label>
+                      <DropdownButton
+                        className="mb-2"
+                        id="photo-dropdown"
+                        title="Preset Photos"
+                      >
+                        <div
+                          className="d-flex flex-wrap"
+                          style={{ paddingLeft: "10px" }}
+                        >
+                          {imageUrls.map((url, index) => (
+                            <Dropdown.Item
+                              key={index}
+                              // className="mx-2 my-2 d-flex align-items-center"
+                              style={{ display: "contents" }}
+                              onClick={() => setForumPictureUrl(url)}
+                            >
+                              <Image
+                                src={url}
+                                width={"20%"}
+                                style={{ margin: "2px" }}
+                              />
+                            </Dropdown.Item>
+                          ))}
+                        </div>
+                      </DropdownButton>
+                      <Button
+                        onClick={() =>
+                          document.getElementById("fileInput").click()
+                        }
+                      >
+                        Upload Custom Photo
+                      </Button>
+                      <input
+                        type="file"
+                        id="fileInput"
+                        style={{ display: "none" }}
+                        onChange={(e) => handleFileUpload(e)}
+                        accept="image/png"
+                      ></input>
+                      <PhotoUploadCropper
+                        // https://www.npmjs.com/package/react-avatar-editor
+                        imgUrl={forumPicture}
+                        show={isCustomPhotoUploaded}
+                        setShow={setIsCustomPhotoUploaded}
+                        saveImage={setForumPictureUrl}
+                      />
+                    </Col>
+                    <Col xs="auto">
+                      <input hidden type="file" />
+                      <div className="container-forum-image-preview">
+                        <Image
+                          className="forum-image-preview"
+                          roundedCircle
+                          src={forumPictureUrl}
+                          onClick={() =>
+                            document.getElementById("fileInput").click()
+                          }
+                          width={"100px"}
+                          height="100px"
+                        />
+                        <div className="middle">
+                          <FontAwesomeIcon icon={faUpload} />
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+
+                  <Form.Label>Forum Description</Form.Label>
+                  <InputGroup className="mb-2">
+                    <Form.Control
+                      as="textarea"
+                      aria-label="With textarea"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </InputGroup>
+                  <Row>
+                    <Col>
+                      <Form.Label>Forum Region</Form.Label>
+                      <InputGroup>
+                        <Form.Select
+                          value={region}
+                          onChange={(e) => setRegion(e.target.value)}
+                        >
+                          {regions.length === 0 ? (
+                            <option>Loading...</option>
+                          ) : (
+                            regions.map((region) => (
+                              <option key={region[0]} value={region[0]}>
+                                {region[1]}
+                              </option>
+                            ))
+                          )}
+                        </Form.Select>
+                      </InputGroup>
+                    </Col>
+                    <Col>
+                      <Form.Label>Forum Language</Form.Label>
+                      <InputGroup className="mb-2">
+                        <Form.Select
+                          value={langauge}
+                          onChange={(e) => setLanguage(e.target.value)}
+                        >
+                          {languages.length === 0 ? (
+                            <option>Loading...</option>
+                          ) : (
+                            languages.map((language, index) => (
+                              <option key={index} value={language[0]}>
+                                {language[1]}
+                              </option>
+                            ))
+                          )}
+                        </Form.Select>
+                      </InputGroup>
+                    </Col>
+                  </Row>
+                </Form>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="1">
+              <Accordion.Header>Settings</Accordion.Header>
+              <Accordion.Body>
+                <Form>
+                  <Row>
+                    <Col xs="auto">
+                      <Form.Label>Public Forum?</Form.Label>
+                      <Form.Check
+                        type="switch"
+                        label={forumSettings.public ? "Public" : "Private"}
+                        onChange={(e) =>
+                          setForumSettings({
+                            ...forumSettings,
+                            public: e.target.checked,
+                          })
+                        }
+                        checked={forumSettings.public}
+                      ></Form.Check>
+                    </Col>
+                    <Col xs="auto">
+                      <Form.Label>Allow Edits?</Form.Label>
+                      <Form.Check
+                        type="switch"
+                        label={forumSettings.allow_edits ? "True" : "False"}
+                        onChange={(e) =>
+                          setForumSettings({
+                            ...forumSettings,
+                            allow_edits: e.target.checked,
+                          })
+                        }
+                        checked={forumSettings.allow_edits}
+                      ></Form.Check>
+                    </Col>
+                    <Col xs="auto">
+                      <Form.Label>Allow Polls?</Form.Label>
+                      <Form.Check
+                        type="switch"
+                        label={forumSettings.allow_polls ? "True" : "False"}
+                        onChange={(e) =>
+                          setForumSettings({
+                            ...forumSettings,
+                            allow_polls: e.target.checked,
+                          })
+                        }
+                        checked={forumSettings.allow_polls}
+                      ></Form.Check>
+                    </Col>
+                  </Row>
+                </Form>
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey="2">
+              <Accordion.Header>Admins + Moderators</Accordion.Header>
+              <Accordion.Body>
+                <i>
+                  Ability to set mods is enabled shortly after forum setup...
+                </i>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
         </Tab>
         <Tab eventKey="preview" title="Preview">
           <ForumPreview
@@ -415,6 +503,21 @@ const CreateForum = () => {
           />
         </Tab>
       </Tabs>
+      <Button
+        onClick={submitForum}
+        variant="primary"
+        className="wiggle"
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          right: "20px",
+          zIndex: 1000,
+          boxShadow: "rgba(0, 0, 0, 0.2) 9px 5px 6px 1px;", // Add drop shadow
+          // You can add more styles as needed
+        }}
+      >
+        Create Forum
+      </Button>
     </div>
   );
 };

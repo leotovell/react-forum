@@ -4,9 +4,6 @@ import { Col, Form, Row } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 
 function PhotoUploadCropper({ imgUrl, show, setShow, saveImage }) {
-  const [src, setSrc] = useState();
-  //   const [show, setShow] = useState(false);
-  const [preview, setPreview] = useState();
   const [scale, setScale] = useState(1.2);
   const [sliderValue, setSliderValue] = useState(1);
 
@@ -48,7 +45,7 @@ function PhotoUploadCropper({ imgUrl, show, setShow, saveImage }) {
                 color={[255, 255, 255, 0.6]}
                 scale={scale}
                 rotate={0}
-                backgroundColor="red"
+                backgroundColor="white"
               />
             </Col>
             <Col>
