@@ -372,18 +372,54 @@ label {
   -ms-transform: translate(-50%, -50%);
 }
 
-.wiggle {
-  animation: wiggle 1s infinite;
+.wiggle:hover {
+  animation: wiggle 2s infinite;
 }
 
 @keyframes wiggle {
   0% {
-    transform: rotate(-1deg);
+    transform: scale(100%);
   }
   50% {
-    transform: rotate(2deg);
+    transform: scale(105%);
+  }
+
+  100% {
+    transform: scale(100%);
+  }
+}
+
+.bottom-blur {
+  position: absolute;
+  display: flex;
+  bottom: -100vh;
+  left: 0;
+  width: 100vw;
+  height: 120vh;
+  z-index: 999;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+
+body {
+  overflow-x: hidden;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #0d6efd;
+  }
+  50% {
+    background-color: red; /* or the original background color */
   }
   100% {
-    transform: rotate(-1deg);
+    background-color: #0d6efd;
   }
+}
+
+.pulse {
+  animation: pulse 0.25s steps(10) infinite; /* Adjust the duration as needed */
 }

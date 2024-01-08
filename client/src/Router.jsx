@@ -11,7 +11,6 @@ import FlashMessage from "./components/FlashMessage";
 import NavBar from "./components/NavBar";
 import { AuthProvider } from "./components/AuthProvider";
 import CreateForum from "./Pages/CreateForum";
-import { StrictMode } from "react";
 
 const Router = () => {
   return (
@@ -29,7 +28,7 @@ const Router = () => {
             <Route path="/logout" exact Component={Logout} />
             <Route path="/profile" exact Component={Profile} />
             <Route path="/profile/:id" exact Component={Profile} />
-            <Route path="/forum/:id" exact Component={Forum} />
+            <Route path="/forum/:url" exact Component={Forum} />
             <Route path="*" exact Component={NotFound} /> {/*  NOT FOUND 404 */}
           </Routes>
         </BrowserRouter>

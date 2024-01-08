@@ -28,8 +28,11 @@ function NavBar() {
               <NavDropdown title="My forums" id="navbarScrollingDropdown">
                 <>
                   {user.forums.map((forum) => (
-                    <NavDropdown.Item href={`/forum/${forum}`} key={forum}>
-                      {forum}
+                    <NavDropdown.Item
+                      href={`/forum/${forum.url}`}
+                      key={forum.name}
+                    >
+                      {forum.name}
                     </NavDropdown.Item>
                   ))}
                   {user.forums.length > 10 ? (

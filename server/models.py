@@ -30,14 +30,28 @@ class Forum(db.Model):
     name = db.Column(db.String(255), unique=True, nullable=False)
     vanity_url = db.Column(db.String(32), unique=True)
     owner = db.Column(db.String(32), db.ForeignKey("users.id"))
+    image = db.Column(db.Text(), nullable=True, default="/static/media/gradient (1).45c081f81c4a257b7eee.png")
     posts = db.relationship("Post", backref="forum", lazy=True)
+    settings = db.relationship("ForumSettings", backref="forum", lazy=True)
 
 class ForumSettings(db.Model):
     __tablename__ = "forum_settings"
     forum_id = db.Column(db.String(32), db.ForeignKey("forums.id"), primary_key=True, unique=True)
-    public = db.Column(db.Boolean, default=True)
     description = db.Column(db.Text, nullable=True)
     language = db.Column(db.String(2), nullable=False) #Language codes found in applicationConfig
+    region = db.Column(db.String(2), nullable=False)
+    public = db.Column(db.Boolean, default=True)
+    allow_edits = db.Column(db.Boolean, default=True)
+    allow_polls = db.Column(db.Boolean, default=True)
+
+    def __init__(self, forum_id, description, language, region, **settings):
+        self.forum_id=forum_id
+        self.description=description
+        self.language=language
+        self.region=region
+        for key, val in settings.items():
+            setattr(self, key, val)
+    
 
 class Post(db.Model):
     __tablename__ = "posts"

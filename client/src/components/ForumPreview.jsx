@@ -7,6 +7,7 @@ function ForumPreview(props) {
     <div>
       <ForumBanner {...props} />
       <ForumPlaceholderPosts />
+      <div className="bottom-blur"></div>
     </div>
   );
 }

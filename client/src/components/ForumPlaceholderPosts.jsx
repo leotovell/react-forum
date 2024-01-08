@@ -4,14 +4,14 @@ import Card from "react-bootstrap/Card";
 import Placeholder from "react-bootstrap/Placeholder";
 
 function ForumPlaceholderPosts() {
-  const rowCount = 5;
+  const rowCount = 9;
   return (
     <div>
       <Container fluid className="mt-3">
         <Row>
           <Col xs={9}>
             {Array.from({ length: rowCount }, (_, idx) => (
-              <Card className="my-2">
+              <Card className="my-2" key={"post" + idx}>
                 <Card.Body>
                   <Placeholder as={Card.Title} animation="wave">
                     <Placeholder xs={6} />
@@ -38,7 +38,7 @@ function ForumPlaceholderPosts() {
             <Row style={{ marginRight: "1px" }}>
               <h2>Trending</h2>
               {Array.from({ length: 10 }, (_, idx) => (
-                <Card className="my-1">
+                <Card className="my-1" key={"trend" + idx}>
                   <Row className="my-3">
                     <Col xs="auto">{"#" + (idx + 1)}</Col>
                     <Col>

@@ -60,12 +60,9 @@ const Register = () => {
     if (username.length >= 3) {
       try {
         setUsernameCheckLoading(true);
-        await httpClient.post(
-          "//localhost:5000/register-check-username",
-          {
-            username,
-          }
-        );
+        await httpClient.post("//localhost:5000/register-check-username", {
+          username,
+        });
         setUsernameCheckLoading(false);
         setValidUsername(true);
       } catch (error) {
@@ -83,7 +80,7 @@ const Register = () => {
 
   const Link = ({ id, children, title, styleColor }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-      <a href="#" style={{ color: styleColor, cursor: "help" }}>
+      <a href="#" tabindex="-1" style={{ color: styleColor, cursor: "help" }}>
         {children}
       </a>
     </OverlayTrigger>

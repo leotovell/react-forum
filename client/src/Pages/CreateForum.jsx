@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import httpClient from "../httpClient";
 import { useAuth } from "../components/AuthProvider";
-import { Form, InputGroup } from "react-bootstrap";
+import { Form, InputGroup, Overlay } from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -26,25 +26,26 @@ import Accordion from "react-bootstrap/Accordion";
 import { useNavigate } from "react-router-dom";
 
 const CreateForum = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
-  if (user) {
-    navigate("/login");
-  }
+  const urlRef = useRef(null);
+  const submitRef = useRef(null);
+  const navigate = useNavigate();
   const [forumName, setForumName] = useState("");
+  const [description, setDescription] = useState();
+  const [region, setRegion] = useState("XX");
+  const [regions, setRegions] = useState([]);
+  const [language, setLanguage] = useState("en");
+  const [languages, setLanguages] = useState([]);
+  const [vanityUrl, setVanityUrl] = useState("");
+  const [vanityUrlValid, setVanityUrlValid] = useState(false);
+  const [forumNameValid, setForumNameValid] = useState(true);
   const [forumSettings, setForumSettings] = useState({
     public: true,
     allow_edits: true,
     allow_polls: true,
   });
-  const [description, setDescription] = useState();
-  const [region, setRegion] = useState("XX");
-  const [regions, setRegions] = useState([]);
-  const [langauge, setLanguage] = useState("en");
-  const [languages, setLanguages] = useState([]);
-  const [vanityUrl, setVanityUrl] = useState("");
-  const [vanityUrlValid, setVanityUrlValid] = useState(false);
-  const [forumNameValid, setForumNameValid] = useState(true);
+  const [illegalCharacters, setIllegalCharacters] = useState([]);
+  const [errors, setErrors] = useState([]);
 
   const imageContext = require.context(
     "../assets/img/default",
@@ -57,6 +58,13 @@ const CreateForum = () => {
 
   const [forumPictureUrl, setForumPictureUrl] = useState(imageUrls[0]);
   const [forumPicture, setForumPicture] = useState(null);
+
+  useEffect(() => {
+    console.log(user);
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user]);
 
   useEffect(() => {
     (async () => {
@@ -78,24 +86,77 @@ const CreateForum = () => {
     })();
   }, []);
 
-  const submitForum = async () => {
-    try {
-      await httpClient.post("//localhost:5000/create-forum", {
-        forumName,
-        // Settings
-        forumSettings,
-      });
-      //   window.location.href = "/";
-      alert("success");
-    } catch (error) {
-      alert("error creating Forum");
+  const [pulsing, setPulsing] = useState(false);
+  useEffect(() => {
+    // Set the condition that triggers the pulsing effect
+    let timeoutId;
+    if (errors.length > 0) {
+      setPulsing(true);
+
+      // Set a timeout to remove the pulsing effect after a certain duration
+      timeoutId = setTimeout(() => {
+        setPulsing(false);
+      }, 1000); // Adjust the duration as needed
     }
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [errors]);
+
+  const submitForum = async () => {
+    // Validate ALL required fields are filled in.
+    let currentErrors = [];
+    if (forumName.length < 3) {
+      currentErrors.push("Forum name is too short");
+    }
+    if (!forumNameValid) {
+      currentErrors.push("Forum name is invalid");
+    }
+    if (vanityUrl.length < 3) {
+      currentErrors.push("Vanity URL is too short");
+    }
+    if (!vanityUrlValid) {
+      currentErrors.push("Vanity URL is invalid");
+    }
+    if (!description) {
+      currentErrors.push("Description cannot be blank");
+    }
+    setErrors([...currentErrors]);
+    if (currentErrors.length == 0)
+      try {
+        await httpClient.post("//localhost:5000/create-forum", {
+          forumName,
+          vanityUrl,
+          // Settings
+          description,
+          language,
+          region,
+          forumSettings,
+        });
+        //   window.location.href = "/";
+        navigate("/");
+      } catch (error) {
+        alert("error creating Forum");
+      }
+  };
+
+  const URLRegex = /[^a-zA-Z0-9_-]/g;
+  const checkURLRegex = (url) => {
+    const match = url.match(URLRegex);
+    if (match) {
+      setIllegalCharacters(match);
+    } else {
+      setIllegalCharacters([]);
+    }
+    return match ? false : true;
   };
 
   const [vanityUrlCheckLoading, setVanityUrlCheckLoading] = useState(false);
   const checkVanityUrl = async (e) => {
     const url = e;
-    if (url.length >= 3) {
+    let res;
+
+    if (checkURLRegex(e) && url.length >= 3) {
       try {
         setVanityUrlCheckLoading(true);
         const resp = await httpClient.post(
@@ -152,13 +213,16 @@ const CreateForum = () => {
   );
 
   useEffect(() => {
-    if (vanityUrl.length < 3) {
+    if (vanityUrl.length < 3 && illegalCharacters.length == 0) {
       setVanityIcon(
-        <Link id="none-set" title="Ensure url is 3 characters or greater.">
+        <Link
+          id="none-set"
+          title="Ensure url is 3 characters or greater. May only contain a-z, 0-9, _ and -"
+        >
           <FontAwesomeIcon icon={faCircleMinus} />
         </Link>
       );
-    } else if (vanityUrlCheckLoading) {
+    } else if (vanityUrlCheckLoading && illegalCharacters.length == 0) {
       setVanityIcon(
         <FontAwesomeIcon
           style={{ color: "grey" }}
@@ -166,7 +230,7 @@ const CreateForum = () => {
           className="fa-spin"
         />
       );
-    } else if (vanityUrlValid) {
+    } else if (vanityUrlValid && illegalCharacters.length == 0) {
       setVanityIcon(
         <FontAwesomeIcon style={{ color: "green" }} icon={faCircleCheck} />
       );
@@ -289,6 +353,7 @@ const CreateForum = () => {
                           https://forum.leotovell.co.uk/forum/
                         </InputGroup.Text>
                         <Form.Control
+                          ref={urlRef}
                           id="basic-url"
                           aria-describedby="basic-addon3"
                           value={vanityUrl}
@@ -297,15 +362,28 @@ const CreateForum = () => {
                             checkVanityUrl(e.target.value);
                           }}
                           style={
-                            vanityUrl.length < 3
+                            vanityUrl.length < 3 &&
+                            illegalCharacters.length == 0
                               ? {}
-                              : vanityUrlCheckLoading
+                              : vanityUrlCheckLoading &&
+                                illegalCharacters.length == 0
                               ? {}
-                              : vanityUrlValid
+                              : vanityUrlValid && illegalCharacters.length == 0
                               ? { border: "1px solid green" }
                               : { border: "1px solid red" }
                           }
                         />
+                        <Overlay
+                          target={urlRef.current}
+                          show={illegalCharacters.length > 0}
+                          placement="bottom"
+                        >
+                          {(props) => (
+                            <Tooltip id="overlay-example" {...props}>
+                              Cannot contain: {illegalCharacters.join(" ")}
+                            </Tooltip>
+                          )}
+                        </Overlay>
                         <InputGroup.Text>{vanityIcon}</InputGroup.Text>
                       </InputGroup>
                     </Col>
@@ -412,7 +490,7 @@ const CreateForum = () => {
                       <Form.Label>Forum Language</Form.Label>
                       <InputGroup className="mb-2">
                         <Form.Select
-                          value={langauge}
+                          value={language}
                           onChange={(e) => setLanguage(e.target.value)}
                         >
                           {languages.length === 0 ? (
@@ -504,20 +582,35 @@ const CreateForum = () => {
         </Tab>
       </Tabs>
       <Button
+        ref={submitRef}
         onClick={submitForum}
         variant="primary"
-        className="wiggle"
+        className={pulsing ? "pulse" : "wiggle"}
         style={{
           position: "fixed",
           bottom: "20px",
           right: "20px",
           zIndex: 1000,
-          boxShadow: "rgba(0, 0, 0, 0.2) 9px 5px 6px 1px;", // Add drop shadow
+          boxShadow: "rgba(0, 0, 0, 0.2) 9px 5px 6px 1px", // Add drop shadow
           // You can add more styles as needed
         }}
       >
         Create Forum
       </Button>
+      <Overlay
+        target={submitRef.current}
+        show={errors.length > 0}
+        placement="left"
+      >
+        {(props) => (
+          <Tooltip id="overlay-example" {...props}>
+            <u>Fix errors</u>
+            {errors.map((error, idx) => (
+              <li>{error}</li>
+            ))}
+          </Tooltip>
+        )}
+      </Overlay>
     </div>
   );
 };

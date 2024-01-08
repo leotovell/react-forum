@@ -5,15 +5,31 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       try {
         const resp = await httpClient.get("//localhost:5000/@me");
-        setUser(resp.data);
-      } catch (error) {}
-    })();
+        if (resp.data) {
+          setUser(resp.data);
+        } else {
+          setUser(false);
+        }
+      } catch (error) {
+        // Handle errors if needed
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  if (loading) {
+    // You can render a loading indicator or return null while data is being fetched
+    return <LoadingIndicator />;
+  }
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>
@@ -23,3 +39,12 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+// Example LoadingIndicator component
+const LoadingIndicator = () => {
+  return (
+    <div className="loader-container">
+      <div className="loader"></div>
+    </div>
+  );
+};

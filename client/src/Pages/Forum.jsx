@@ -4,69 +4,56 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import httpClient from "../httpClient";
 import PostsFeed from "../components/PostsFeed";
 import Pagination from "../components/Pagination";
+import ForumBanner from "../components/ForumBanner";
+import ForumPlaceholderPosts from "../components/ForumPlaceholderPosts";
 
 const Forum = (props) => {
   const { user } = useAuth();
-  const forum = useParams();
-  const navigate = useNavigate();
-  const forum_id = forum.id;
-  const [posts, setPosts] = useState([]);
-  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
-  const [reloadPosts, setReloadPosts] = useState(false);
-  const [postCount, setPostCount] = useState(0);
-  const [forumName, setForumName] = useState(forum_id);
-  const [forumNotFound, setForumNotFound] = useState(false);
+  const { url } = useParams();
 
-  useEffect(() => {
-    setIsLoadingPosts(true);
-  }, [reloadPosts]);
-
-  const location = useLocation();
-  const page = parseInt(new URLSearchParams(location.search).get("page") || 1);
-
-  const goToPage = (pageNumber) => {
-    setIsLoadingPosts(true);
-    navigate(`/?page=${pageNumber}`);
-  };
+  const [forum, setForum] = useState({
+    name: "",
+    desc: "",
+    image: "",
+  });
+  const [settings, setSettings] = useState({
+    public: false,
+    language: "XX",
+    region: "XX",
+    allow_edits: false,
+    allow_polls: false,
+  });
 
   useEffect(() => {
     (async () => {
       try {
-        const resp = await httpClient.post("//localhost:5000/get-posts-forum", {
-          forum_id,
-          page,
+        const resp = await httpClient.post("//localhost:5000/api/get-forum", {
+          url,
         });
-        setPosts(resp.data.posts);
-        setPostCount(resp.data.total_posts);
-        setIsLoadingPosts(false);
-        setReloadPosts(false);
+
+        // Update forum state
+        for (const [key, value] of Object.entries(resp.data.forum)) {
+          setForum((prevForum) => ({ ...prevForum, [key]: value }));
+        }
+
+        // Update settings state
+        for (const [key, value] of Object.entries(resp.data.settings)) {
+          setSettings((prevSettings) => ({ ...prevSettings, [key]: value }));
+        }
       } catch (error) {
-        console.log(error);
-        setForumNotFound(true);
-        console.log("Not found");
-        // setIsLoadingPosts(false);
+        // Handle the error
       }
     })();
-  }, [page, location.key, reloadPosts]);
-
-  console.log(forumNotFound);
+  }, []);
 
   return (
     <div>
-      <div className="forum-banner">
-        <h1>{forumName}</h1>
-      </div>
-      {isLoadingPosts ? (
-        forumNotFound ? (
-          <div className="loader-container">
-            <div className="loader"></div>
-          </div>
-        ) : (
-          <>Not Found</>
-        )
-      ) : (
-        <>Posts </>
-      )}
+      <ForumBanner
+        forumName={forum.name}
+        desc={forum.desc}
+        forumImage={forum.image}
+      />
+      <ForumPlaceholderPosts />
     </div>
   );
 };

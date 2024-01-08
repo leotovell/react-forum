@@ -3,7 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_session import Session
 from flask_cors import CORS
 from flask_migrate import Migrate
-from models import User, Post, Comment, ResetToken, Forum, db
+from models import User, Post, Comment, ResetToken, Forum, ForumSettings, db
 from config import ApplicationConfig, RESPONSES, languageCodes, countries
 import math
 
@@ -47,13 +47,16 @@ def get_current_user():
     
     user = User.query.filter_by(id=user_id).first()
 
-    forums = ["forum 1", "csgo"]
+    forums = Forum.query.filter_by(owner=user_id).all()
+    new_forums = []
+    for forum in forums:
+        new_forums.append({"name": forum.name, "url": forum.vanity_url})
 
     # Get forums 
     return jsonify({
         "id": user.id,
         "email": user.email,
-        "forums": forums
+        "forums": new_forums
     })
 
 @app.route("/register", methods=["POST"])
@@ -167,12 +170,23 @@ def check_vanity_url():
 
 @app.route("/create-forum", methods=["POST"])
 def create_forum():
-    forum_name = request.json["forum_name"]
-    owner_id = session.get("user_id")
+    #General Forum
+    name = request.json["forumName"]
+    url = request.json["vanityUrl"]
+    owner = session.get("user_id")
     #Forum Settings
-    visibility = request.json["visibility"]
-    new_forum = Forum(name=forum_name, owner=owner_id)
+    description = request.json["description"]
+    settings = request.json["forumSettings"]
+    language = request.json["language"]
+    region = request.json["region"]
+    if not all([name, url, owner, description, settings]):
+       print([name, url, owner, description, settings])
+       return jsonify({"error": "malformed or missing data"}), 401 
+    new_forum = Forum(name=name, vanity_url=url, owner=owner)
     db.session.add(new_forum)
+    db.session.commit()
+    new_settings = ForumSettings(forum_id=new_forum.id, description=description, language=language, region=region, **settings)
+    db.session.add(new_settings)
     db.session.commit()
 
     flash_message(session, ("success", f"Great! {new_forum.name} is now live!"))
@@ -397,6 +411,26 @@ def reset_password():
         return "200"
     flash_message(session, RESPONSES.CLIENT.FORBIDDEN_403)
     return "403"
+
+@app.route("/api/get-forum", methods=["POST"])
+def get_forum():
+    url = request.json["url"]
+    forum = Forum.query.filter_by(vanity_url=url).first()
+    settings = forum.settings[0]
+    return jsonify({
+        "forum": {
+            "name": forum.name,
+            "desc": settings.description,
+            "image": forum.image
+        },
+        "settings": {
+            "public": settings.public,
+            "language": settings.language,
+            "region": settings.region,
+            "allow_edits": settings.allow_edits,
+            "allow_polls": settings.allow_polls
+        }
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
