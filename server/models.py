@@ -31,7 +31,8 @@ class Forum(db.Model):
     vanity_url = db.Column(db.String(32), unique=True)
     owner = db.Column(db.String(32), db.ForeignKey("users.id"))
     image = db.Column(db.Text(), nullable=True, default="/static/media/gradient (1).45c081f81c4a257b7eee.png")
-    posts = db.relationship("Post", backref="forum", lazy=True)
+    date_created = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    posts = db.relationship("Post", backref="post", lazy=True)
     settings = db.relationship("ForumSettings", backref="forum", lazy=True)
 
 class ForumSettings(db.Model):
@@ -61,6 +62,7 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime(timezone=True), server_default=func.now())
     forum_id = db.Column(db.String(32), db.ForeignKey("forums.id"), nullable=False)
+    forum = db.relationship("Forum", backref="post", lazy=True)
 
 class Subscription(db.Model):
     __tablename__ = "subscriptions"

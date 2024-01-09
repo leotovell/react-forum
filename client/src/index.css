@@ -423,3 +423,17 @@ body {
 .pulse {
   animation: pulse 0.25s steps(10) infinite; /* Adjust the duration as needed */
 }
+
+@keyframes bounceAnimation {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+.bouncing-icon {
+  animation: bounceAnimation 3s infinite ease-in-out;
+}

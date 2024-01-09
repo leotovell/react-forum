@@ -432,5 +432,24 @@ def get_forum():
         }
     })
 
+@app.route("/api/get-new-forums", methods=["GET"])
+def get_new_forums():
+    # Logic to choose newest (10) forums.
+    forums = Forum.query.order_by(Forum.date_created.desc()).limit(10).all()
+    forums = [{"name": forum.name, "url": forum.vanity_url, "date": forum.date_created} for forum in forums]
+    return jsonify({
+        "forums": forums
+    })
+
+from datetime import datetime, timedelta
+@app.route("/api/get-popular-posts", methods=["GET"])
+def get_popular_posts():
+    # Logic to choose 10 most upvoted posts in the last week (WHERE date is less than a week ago)
+    posts = Post.query.filter(Post.date < datetime.now() - timedelta(days=7)).limit(10).all()
+    posts = [{"title": post.title, "author": post.author, "date": post.date, "forum": post.forum[0].name} for post in posts]
+    return jsonify({
+        "posts": posts
+    })
+
 if __name__ == "__main__":
     app.run(debug=True)
