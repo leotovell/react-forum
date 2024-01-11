@@ -416,6 +416,10 @@ def reset_password():
 def get_forum():
     url = request.json["url"]
     forum = Forum.query.filter_by(vanity_url=url).first()
+    if forum is None:
+        return jsonify({
+            "error": "Not Found"
+        }), 404
     settings = forum.settings[0]
     return jsonify({
         "forum": {
@@ -450,6 +454,41 @@ def get_popular_posts():
     return jsonify({
         "posts": posts
     })
+
+@app.route("/api/search", methods=["POST"])
+def search():
+    searchType = request.json["searchType"]
+    searchValue = request.json["searchValue"]
+    search = "%{}%".format(searchValue)
+    formatted_results = []
+    if searchType == "forum":
+        # FORUM SEARCH
+        results = Forum.query.filter(Forum.name.like(search)).all()
+        if results is not None:
+            for result in results:
+                formatted_results.append({
+                    "name": result.name,
+                    "desc": result.settings[0].description,
+                    "url": result.vanity_url,
+                    "image": result.image,
+                    "posts": len(result.posts),
+                    "public": result.settings[0].public
+                })
+            
+    elif searchType == "user":
+        # USER SEARCH
+        results = User.query.filter(User.username.like(search)).all()
+        if results is not None:
+            for result in results:
+                formatted_results.append({
+                    "username": result.username
+                })
+    
+    return jsonify({
+        "results": formatted_results,
+        "type": searchType
+    })
+
 
 if __name__ == "__main__":
     app.run(debug=True)

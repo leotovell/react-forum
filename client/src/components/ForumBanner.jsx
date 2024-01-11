@@ -1,9 +1,22 @@
 import React from "react";
 import { Container, Col, Row, Button } from "react-bootstrap";
+import { useAuth } from "./AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 function ForumBanner(props) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleFollow = () => {
+    alert("handling follow");
+  };
+
+  const handleShare = () => {
+    alert("handling share");
+  };
+
   return (
-    <div className="forum-banner">
+    <div className="forum-banner" style={props.style}>
       <Container fluid>
         <Row>
           <Col
@@ -27,14 +40,33 @@ function ForumBanner(props) {
             md={2}
             className="buttons d-flex flex-column justify-content-center"
           >
-            <Button className="my-2">Follow</Button>
-            <Button className="my-2">New Post</Button>
-            <Button className="my-2">Share</Button>
+            {user ? (
+              <Button className="my-2" onClick={handleFollow}>
+                Follow
+              </Button>
+            ) : (
+              <Button
+                className="my-2"
+                onClick={() => navigate(`/login?redirect=/forum/${props.url}`)}
+              >
+                Login to Follow
+              </Button>
+            )}
+            <Button className="my-2" onClick={() => navigate(`create-post`)}>
+              New Post
+            </Button>
+            <Button className="my-2" onClick={handleShare}>
+              Share
+            </Button>
           </Col>
         </Row>
       </Container>
     </div>
   );
 }
+
+ForumBanner.defaultProps = {
+  style: {},
+};
 
 export default ForumBanner;

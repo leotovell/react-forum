@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -7,9 +7,11 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import httpClient from "../httpClient";
 import { useAuth } from "./AuthProvider";
-
+import { Dropdown, DropdownButton } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 function NavBar() {
   const { user } = useAuth();
+  const searchInputRef = useRef(null);
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
@@ -73,12 +75,32 @@ function NavBar() {
           </Nav>
           <Form className="d-flex">
             <Form.Control
+              ref={searchInputRef}
               type="search"
               placeholder="Search"
               className="me-2"
               aria-label="Search"
             />
-            <Button variant="outline-success">Search</Button>
+            <DropdownButton
+              variant="outline-success"
+              title="Search"
+              id="input-group-dropdown-1"
+            >
+              <Dropdown.Item
+                onClick={() =>
+                  (window.location.href = `${window.location.origin}/search?v=${searchInputRef.current.value}&t=forum`)
+                }
+              >
+                Forum
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() =>
+                  (window.location.href = `${window.location.origin}/search?v=${searchInputRef.current.value}&t=user`)
+                }
+              >
+                User
+              </Dropdown.Item>
+            </DropdownButton>
           </Form>
         </Navbar.Collapse>
       </Container>

@@ -11,6 +11,7 @@ import FlashMessage from "./components/FlashMessage";
 import NavBar from "./components/NavBar";
 import { AuthProvider } from "./components/AuthProvider";
 import CreateForum from "./Pages/CreateForum";
+import Search from "./Pages/Search";
 
 const Router = () => {
   return (
@@ -21,19 +22,23 @@ const Router = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" exact Component={LandingPage} />
+            {/* User */}
             <Route path="/register" exact Component={Register} />
             <Route path="/login" exact Component={Login} />
-            <Route path="/create-forum" exact Component={CreateForum} />
-            <Route path="/logout" exact Component={Logout} />
             <Route path="/profile" exact Component={Profile} />
             <Route path="/profile/:id" exact Component={Profile} />
+            <Route path="/logout" exact Component={Logout} />
+            {/* Forums */}
+            <Route path="/search" exact Component={Search} />
+            <Route path="/create-forum" exact Component={CreateForum} />
             <Route path="/forum/:url" exact Component={Forum} />
             <Route
               path="/forum/:url/create-post"
               exact
               Component={CreatePost}
             />
-            <Route path="*" exact Component={NotFound} /> {/*  NOT FOUND 404 */}
+            {/* Error 404 */}
+            <Route path="*" exact Component={NotFound} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

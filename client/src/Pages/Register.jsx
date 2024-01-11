@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import httpClient from "../httpClient";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
-import InputGroup from "react-bootstrap/InputGroup";
+import {
+  FloatingLabel,
+  Form,
+  Button,
+  Card,
+  InputGroup,
+  Row,
+  Col,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleCheck,
@@ -14,9 +18,9 @@ import {
   faEyeSlash,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useAuth } from "../components/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import HoverTooltip from "../components/HoverTooltip";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -27,9 +31,11 @@ const Register = () => {
   const passwordsMatch = password === confirmPassword;
   const navigate = useNavigate();
   const { user } = useAuth();
-  if (user) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const registerUser = async () => {
     if (validUsername) {
@@ -78,24 +84,16 @@ const Register = () => {
     <FontAwesomeIcon icon={faCircleMinus} />
   );
 
-  const Link = ({ id, children, title, styleColor }) => (
-    <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-      <a href="#" tabindex="-1" style={{ color: styleColor, cursor: "help" }}>
-        {children}
-      </a>
-    </OverlayTrigger>
-  );
-
   useEffect(() => {
     if (username.length < 3) {
       setUsernameIcon(
-        <Link
+        <HoverTooltip
           id="none-set"
           title="Ensure username is 3 characters or greater."
           styleColor="grey"
         >
           <FontAwesomeIcon icon={faCircleMinus} />
-        </Link>
+        </HoverTooltip>
       );
     } else if (usernameCheckLoading) {
       setUsernameIcon(
@@ -107,15 +105,19 @@ const Register = () => {
       );
     } else if (validUsername) {
       setUsernameIcon(
-        <Link id="none-set" title="Username available" styleColor="green">
+        <HoverTooltip
+          id="none-set"
+          title="Username available"
+          styleColor="green"
+        >
           <FontAwesomeIcon style={{ color: "green" }} icon={faCircleCheck} />
-        </Link>
+        </HoverTooltip>
       );
     } else {
       setUsernameIcon(
-        <Link id="none-set" title="Username invalid" styleColor="red">
+        <HoverTooltip id="none-set" title="Username invalid" styleColor="red">
           <FontAwesomeIcon style={{ color: "red" }} icon={faCircleXmark} />
-        </Link>
+        </HoverTooltip>
       );
     }
   }, [validUsername, username, usernameCheckLoading]);
@@ -165,7 +167,7 @@ const Register = () => {
                       }
                       onChange={(e) => {
                         setUsername(e.target.value);
-                        if (e.target.value.length != 0) {
+                        if (e.target.value.length !== 0) {
                           checkUsernameValid(e.target.value);
                         }
                       }}

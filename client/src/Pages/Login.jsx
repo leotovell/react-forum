@@ -19,19 +19,28 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const urlSearchString = window.location.search;
+  const params = new URLSearchParams(urlSearchString);
+  const redirect = params.get("redirect");
 
   const { user } = useAuth();
-  if (user) {
-    navigate("/");
-  }
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const logInUser = async () => {
     try {
-      const resp = await httpClient.post("//localhost:5000/login", {
+      await httpClient.post("//localhost:5000/login", {
         email,
         password,
       });
-      navigate("/");
+      if (redirect) {
+        navigate(redirect);
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       if (error.response.status === 401) {
         alert("Invalid Credetials (401)");
@@ -41,7 +50,7 @@ const Login = () => {
 
   const resetPassword = async () => {
     try {
-      const resp = await httpClient.post("//localhost:5000/reset-password", {
+      await httpClient.post("//localhost:5000/reset-password", {
         resetEmail,
       });
       alert("Please check email and log in again");
@@ -108,12 +117,21 @@ const Login = () => {
               </Row>
 
               <div style={{ float: "right", paddingBottom: "5px" }}>
-                <a
+                <button
+                  style={{
+                    all: "unset",
+                    color: "rgba(var(--bs-link-color-rgb), 1)",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                  }}
                   id="forgotPasswordBtn"
-                  onClick={() => setShowPasswordReset(true)}
+                  onClick={(e) => {
+                    setShowPasswordReset(true);
+                    e.preventDefault();
+                  }}
                 >
                   <span>Forgot Password?</span>
-                </a>
+                </button>
               </div>
               <br />
               <div className="login-submit-container">

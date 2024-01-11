@@ -1,12 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import httpClient from "../httpClient";
 import { useAuth } from "../components/AuthProvider";
-import { Form, InputGroup, Overlay } from "react-bootstrap";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import PhotoUploadCropper from "../components/PhotoUploadCropper";
-import Tooltip from "react-bootstrap/Tooltip";
+import { useNavigate } from "react-router-dom";
+import {
+  Form,
+  InputGroup,
+  Overlay,
+  Row,
+  Col,
+  Tooltip,
+  Tab,
+  Tabs,
+  Image,
+  Button,
+  Dropdown,
+  DropdownButton,
+  Accordion,
+} from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleMinus,
   faSpinner,
@@ -15,18 +26,11 @@ import {
   faCircleQuestion,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
-import Image from "react-bootstrap/Image";
-import { Dropdown, DropdownButton } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
+import PhotoUploadCropper from "../components/PhotoUploadCropper";
 import ForumPreview from "../components/ForumPreview";
-import Accordion from "react-bootstrap/Accordion";
-import { useNavigate } from "react-router-dom";
+import HoverTooltip from "../components/HoverTooltip";
 
 const CreateForum = () => {
-  const { user } = useAuth();
   const urlRef = useRef(null);
   const submitRef = useRef(null);
   const navigate = useNavigate();
@@ -59,8 +63,8 @@ const CreateForum = () => {
   const [forumPictureUrl, setForumPictureUrl] = useState(imageUrls[0]);
   const [forumPicture, setForumPicture] = useState(null);
 
+  const { user } = useAuth();
   useEffect(() => {
-    console.log(user);
     if (!user) {
       navigate("/login");
     }
@@ -197,17 +201,6 @@ const CreateForum = () => {
     }
   };
 
-  const Link = ({ id, children, title }) => (
-    <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-      <button
-        style={{ all: "unset", color: "grey", cursor: "help" }}
-        onClick={(e) => e.preventDefault()}
-      >
-        {children}
-      </button>
-    </OverlayTrigger>
-  );
-
   const [vanityIcon, setVanityIcon] = useState(
     <FontAwesomeIcon icon={faCircleMinus} />
   );
@@ -215,12 +208,12 @@ const CreateForum = () => {
   useEffect(() => {
     if (vanityUrl.length < 3 && illegalCharacters.length == 0) {
       setVanityIcon(
-        <Link
+        <HoverTooltip
           id="none-set"
           title="Ensure url is 3 characters or greater. May only contain a-z, 0-9, _ and -"
         >
           <FontAwesomeIcon icon={faCircleMinus} />
-        </Link>
+        </HoverTooltip>
       );
     } else if (vanityUrlCheckLoading && illegalCharacters.length == 0) {
       setVanityIcon(
@@ -248,12 +241,12 @@ const CreateForum = () => {
   useEffect(() => {
     if (forumName.length < 3) {
       setForumNameIcon(
-        <Link
+        <HoverTooltip
           id="none-set"
           title="Ensure forum name is 3 characters or greater."
         >
           <FontAwesomeIcon icon={faCircleMinus} />
-        </Link>
+        </HoverTooltip>
       );
     } else if (forumNameCheckLoading) {
       setForumNameIcon(
@@ -311,12 +304,12 @@ const CreateForum = () => {
                     <Col>
                       <Form.Label>
                         Your Forum Name{" "}
-                        <Link
+                        <HoverTooltip
                           id="t-1"
                           title={"Must be 3 characters or greater"}
                         >
                           <FontAwesomeIcon icon={faCircleQuestion} />
-                        </Link>
+                        </HoverTooltip>
                       </Form.Label>
                       <InputGroup className="mb-2">
                         <Form.Control
@@ -341,12 +334,12 @@ const CreateForum = () => {
 
                       <Form.Label>
                         Your vanity URL{" "}
-                        <Link
+                        <HoverTooltip
                           id="t-1"
                           title={"Must be 3 characters or greater"}
                         >
                           <FontAwesomeIcon icon={faCircleQuestion} />
-                        </Link>
+                        </HoverTooltip>
                       </Form.Label>
                       <InputGroup className="mb-2">
                         <InputGroup.Text id="basic-addon3">

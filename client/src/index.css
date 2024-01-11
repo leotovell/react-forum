@@ -437,3 +437,8 @@ body {
 .bouncing-icon {
   animation: bounceAnimation 3s infinite ease-in-out;
 }
+
+.hover-underline:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
