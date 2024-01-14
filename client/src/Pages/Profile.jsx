@@ -1,45 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import httpClient from "../httpClient";
+import { useAuth } from "../components/AuthProvider";
+import ErrorNotice from "../components/ErrorNotice";
+import ProfileBanner from "../components/ProfileBanner";
+import PostsFeed from "../components/PostsFeed";
 
 const Profile = (props) => {
+  const { user } = useAuth();
   const tempID = useParams();
   const [id, setId] = useState(tempID.id);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [profileData, setProfileData] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [alertVisible, setAlertVisible] = useState();
-  const [isLoggedIn, setIsLoggedIn] = useState();
+  const [profileNotFound, setProfileNotFound] = useState(false);
   const navigate = useNavigate();
-
-  setInterval(() => {
-    setAlertVisible(true);
-  }, 5000);
-
   useEffect(() => {
     (async () => {
       try {
-        const resp = await httpClient.post("//localhost:5000/profile", {
-          id,
+        let searchID = id;
+        setIsLoading(true);
+        if (user && !id) {
+          setIsOwnProfile(true);
+          searchID = user.id;
+        }
+
+        const resp = await httpClient.post("//localhost:5000/api/profile", {
+          id: searchID,
         });
-        setProfileData(resp.data);
-        setIsLoading(false);
+        setProfile(resp.data);
       } catch (error) {
-        console.log("User not found");
-        (async () => {
-          try {
-            const resp = await httpClient.get("//localhost:5000/@me");
-            setId(resp.data.id);
-            setIsLoggedIn(true);
-            setIsOwnProfile(true);
-          } catch (error) {
-            console.log("Not authenticated");
-            navigate("/login");
-          }
-        })();
+        setProfileNotFound(true);
+      } finally {
+        setIsLoading(false);
       }
     })();
-  }, [isLoggedIn]);
+  }, [id]);
 
   return (
     <div>
@@ -51,8 +48,21 @@ const Profile = (props) => {
             console.
           </span>
         </div>
+      ) : profileNotFound ? (
+        <ErrorNotice
+          title="Hmmm, that profile doesnt exist..."
+          description={[
+            "Check you have the right URL",
+            <>
+              Try <a href={`/search?v=&t=user`}>search</a> for the user instead?
+            </>,
+          ]}
+        />
       ) : (
-        <h1>{profileData.email}</h1>
+        <>
+          <ProfileBanner {...profile} />
+          <PostsFeed posts={profile.posts} />
+        </>
       )}
     </div>
   );

@@ -66,7 +66,7 @@ const CreateForum = () => {
   const { user } = useAuth();
   useEffect(() => {
     if (!user) {
-      navigate("/login");
+      navigate("/login?redirect=/create-forum");
     }
   }, [user]);
 

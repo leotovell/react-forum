@@ -40,12 +40,17 @@ function NavBar() {
                   {user.forums.length > 10 ? (
                     <>
                       <NavDropdown.Divider />
-                      <NavDropdown.Item href="profile/forums">
+                      <NavDropdown.Item href="/profile/forums">
                         View all
                       </NavDropdown.Item>
                     </>
                   ) : (
-                    <></>
+                    <>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item href="/create-forum">
+                        Create Forum
+                      </NavDropdown.Item>
+                    </>
                   )}
                 </>
               </NavDropdown>

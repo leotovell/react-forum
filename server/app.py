@@ -349,7 +349,7 @@ def delete_comment():
     flash_message(session, ("success", "Your comment has been deleted."))    
     return "200"
 
-@app.route("/profile", methods=["POST"])
+@app.route("/api/profile", methods=["POST"])
 def profile_info():
     # This returns a users email, date joined, posts. 
     user_id = request.json["id"]
@@ -380,6 +380,8 @@ def profile_info():
         })
     
     return jsonify({
+        "id": user.id,
+        "username": user.username,
         "email": user.email,
         "date_joined": user.date_joined,
         "posts": new_posts,
@@ -481,7 +483,12 @@ def search():
         if results is not None:
             for result in results:
                 formatted_results.append({
-                    "username": result.username
+                    "id": result.id,
+                    "username": result.username,
+                    # "bio": result.bio,
+                    "date_joined": result.date_joined,
+                    "posts": Post.query.filter_by(author=result.id),
+                    # "image": result.image,
                 })
     
     return jsonify({

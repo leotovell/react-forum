@@ -5,6 +5,7 @@ import ForumBanner from "../components/ForumBanner";
 import ForumPosts from "../components/ForumPosts";
 import { Container, Image, Row } from "react-bootstrap";
 import sadface from "../assets/img/page/sadface.svg";
+import ErrorNotice from "../components/ErrorNotice";
 
 const Forum = (props) => {
   const { url } = useParams();
@@ -62,32 +63,16 @@ const Forum = (props) => {
         <div>
           {forumNotFound ? (
             // FORUM NOT FOUND ERROR 404
-            <Container fluid className="">
-              <Row
-                xs={5}
-                className="d-flex justify-content-center align-items-center m-5"
-              >
-                <Image src={sadface} fluid style={{ opacity: "0.5" }} />
-              </Row>
-              <Row
-                xs={2}
-                className="d-flex justify-content-center align-items-center"
-              >
-                <div className="m-5">
-                  <h1 style={{ textAlign: "center" }}>
-                    Whoops! Doesn't seem like theres anyone home at /{url}
-                  </h1>
-                  <br />
-                  <h4 style={{ textAlign: "center" }}>
-                    Have you got the right URL?
-                  </h4>
-                  <h4 style={{ textAlign: "center" }}>
-                    Try <a href={`/search?v=${url}&t=forum`}>search</a> for the
-                    forum instead?
-                  </h4>
-                </div>
-              </Row>
-            </Container>
+            <ErrorNotice
+              title={`Whoops! Doesn't seem like theres anyone home at /${url}`}
+              description={[
+                "Have you got the right URL?",
+                <>
+                  Try <a href={`/search?v=${url}&t=forum`}>search</a> for the
+                  forum instead?
+                </>,
+              ]}
+            />
           ) : (
             // MAIN PAGE
             <div>

@@ -23,6 +23,8 @@ import { useNavigate } from "react-router-dom";
 import HoverTooltip from "../components/HoverTooltip";
 
 const Register = () => {
+  document.title = "LH | Register";
+
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

@@ -1,17 +1,17 @@
 import React from "react";
 import Post from "./Post";
+import { useAuth } from "./AuthProvider";
 
-function PostsFeed(props) {
-  const posts = props.posts;
-  const user = props.currentUser;
+function PostsFeed({ posts }) {
+  const { user } = useAuth();
   return (
     <div>
       {posts.map((post) => (
         <Post
           data={post}
-          user={user}
+          user
           key={post.id}
-          setReloadPosts={props.setReloadPosts}
+          // setReloadPosts={props.setReloadPosts}
         />
       ))}
     </div>

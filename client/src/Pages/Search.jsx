@@ -12,6 +12,7 @@ import {
 import httpClient from "../httpClient";
 import { useParams } from "react-router-dom";
 import ForumBanner from "../components/ForumBanner";
+import ProfileBanner from "../components/ProfileBanner";
 
 function Search() {
   const urlSearchString = window.location.search;
@@ -35,6 +36,7 @@ function Search() {
           searchValue,
         });
         setResults(resp.data.results);
+        console.log(resp.data.results);
       } catch (error) {
       } finally {
         setResultsLoading(false);
@@ -91,7 +93,7 @@ function Search() {
         ) : results.length === 0 ? (
           <div>No results</div>
         ) : (
-          <Container fluid style={{ overflow: "scroll" }}>
+          <Container fluid style={{ overflowY: "scroll", maxHeight: "80vh" }}>
             {searchType === "forum" ? (
               results.map((res, idx) => (
                 <Row key={idx} className="my-2">
@@ -106,9 +108,22 @@ function Search() {
               ))
             ) : searchType === "user" ? (
               results.map((res, idx) => (
-                <Row key={idx} className="my-2">
-                  {res.username}
-                </Row>
+                <a
+                  style={{ all: "unset" }}
+                  onMouseEnter={(e) => {
+                    e.target.style.opacity = "0.8";
+                    e.target.style.border = "1px blue solid";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.opacity = "1";
+                    e.target.style.border = "0px blue solid";
+                  }}
+                  href={`/profile/${res.id}`}
+                >
+                  <Row key={idx} className="my-2">
+                    <ProfileBanner style={{ borderRadius: "20px" }} {...res} />
+                  </Row>
+                </a>
               ))
             ) : searchType === "post" ? (
               <div></div>

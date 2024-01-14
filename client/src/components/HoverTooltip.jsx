@@ -1,9 +1,12 @@
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-const HoverTooltip = ({ id, children, title }) => {
+const HoverTooltip = ({ id, children, title, placement }) => {
   return (
-    <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
+    <OverlayTrigger
+      placement={placement}
+      overlay={<Tooltip id={id}>{title}</Tooltip>}
+    >
       <button
         style={{ all: "unset", color: "grey", cursor: "help" }}
         onClick={(e) => e.preventDefault()}
@@ -12,6 +15,10 @@ const HoverTooltip = ({ id, children, title }) => {
       </button>
     </OverlayTrigger>
   );
+};
+
+HoverTooltip.defaultProps = {
+  placement: "top",
 };
 
 export default HoverTooltip;
