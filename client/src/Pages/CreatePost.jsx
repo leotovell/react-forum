@@ -6,20 +6,24 @@ import {
   FloatingLabel,
   Form,
   InputGroup,
+  Overlay,
   Tab,
   Tabs,
+  Tooltip,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import Post from "../components/Post";
 
 const CreatePost = () => {
-  const [title, setTitle] = useState();
-  const [content, setContent] = useState();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const { url } = useParams();
   const navigate = useNavigate();
   const [forumNotFound, setForumNotFound] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const imageUploadRef = useRef(null);
+  const submitRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -41,7 +45,7 @@ const CreatePost = () => {
         content,
         url,
       });
-      window.location.href = "/";
+      navigate(`/${url}`);
     } catch (error) {
       alert("error creating post");
     }
@@ -147,8 +151,32 @@ const CreatePost = () => {
                   eventKey="preview"
                   title="Preview"
                   style={{ marginBottom: "0 !important" }}
-                ></Tab>
+                >
+                  <Post title={title} content={content} url={url} />
+                </Tab>
               </Tabs>
+              <Button
+                ref={submitRef}
+                onClick={submitPost}
+                variant="primary"
+                style={{
+                  position: "fixed",
+                  bottom: "20px",
+                  right: "20px",
+                  zIndex: 1000,
+                  boxShadow: "rgba(0, 0, 0, 0.2) 9px 5px 6px 1px", // Add drop shadow
+                  // You can add more styles as needed
+                }}
+              >
+                Create Post
+              </Button>
+              <Overlay target={submitRef.current} show={false} placement="left">
+                {(props) => (
+                  <Tooltip id="overlay-example" {...props}>
+                    <u>Fix errors</u>
+                  </Tooltip>
+                )}
+              </Overlay>
             </div>
           )}
         </div>
